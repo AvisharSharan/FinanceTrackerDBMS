@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import '../styles/Sidebar.css'; // You can style it here
 
 // Import your SVG icons
@@ -12,38 +12,63 @@ import TransactionsIcon from '../assets/icons/transaction.svg';
 const Sidebar = () => {
   return (
     <div className="sidebar">
-      <h2 className="sidebar-title">FinTrack</h2>
+      <h2 className="logo">FinTrack</h2>
       <nav>
         <ul>
           <li>
-            <Link to="/dashboard" className="sidebar-link">
+            <NavLink
+              to="/dashboard"
+              className={({ isActive }) =>
+                isActive ? 'sidebar-link active' : 'sidebar-link'
+              }
+            >
               <img src={DashboardIcon} alt="Dashboard" className="icon" />
               Dashboard
-            </Link>
+            </NavLink>
           </li>
           <li>
-            <Link to="/budget" className="sidebar-link">
+            <NavLink
+              to="/budget"
+              className={({ isActive }) =>
+                isActive ? 'sidebar-link active' : 'sidebar-link'
+              }
+            >
               <img src={BudgetIcon} alt="Budget" className="icon" />
               Budget
-            </Link>
+            </NavLink>
           </li>
           <li>
-            <Link to="/goals" className="sidebar-link">
+            <NavLink
+              to="/goals"
+              className={({ isActive }) =>
+                isActive ? 'sidebar-link active' : 'sidebar-link'
+              }
+            >
               <img src={GoalsIcon} alt="Goals" className="icon" />
               Goals
-            </Link>
+            </NavLink>
           </li>
           <li>
-            <Link to="/insights" className="sidebar-link">
+            <NavLink
+              to="/insights"
+              className={({ isActive }) =>
+                isActive ? 'sidebar-link active' : 'sidebar-link'
+              }
+            >
               <img src={InsightsIcon} alt="Insights" className="icon" />
               Insights
-            </Link>
+            </NavLink>
           </li>
           <li>
-            <Link to="/transactions" className="sidebar-link">
+            <NavLink
+              to="/transactions"
+              className={({ isActive }) =>
+                isActive ? 'sidebar-link active' : 'sidebar-link'
+              }
+            >
               <img src={TransactionsIcon} alt="Transactions" className="icon" />
               Transactions
-            </Link>
+            </NavLink>
           </li>
         </ul>
       </nav>

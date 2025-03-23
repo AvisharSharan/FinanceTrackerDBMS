@@ -1,0 +1,47 @@
+.dashboard-container {
+    padding: 20px;
+    background-color: #f7f7f7;
+  }
+  
+  .welcome-header {
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .key-metrics {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .key-metrics .metric {
+    flex: 1;
+    background-color: #ffffff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .money-flow-chart,
+  .recent-transactions,
+  .budget-overview,
+  .saving-goals {
+    margin-bottom: 20px;
+  }
+  
+  .recent-transactions table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .recent-transactions th,
+  .recent-transactions td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: left;
+  }
+  
+  .goal {
+    margin-bottom: 10px;
+  }
