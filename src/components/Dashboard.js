@@ -19,42 +19,47 @@ const Dashboard = () => {
     fetchData();
   }, []);
 
+  // Handle loading state
   if (!dashboardData) {
     return <div>Loading...</div>;
   }
+
+  // Handle missing properties with default values
+  const {
+    totalBalance = 0,
+    income = 0,
+    expense = 0,
+    totalSavings = 0,
+    recentTransactions = [],
+    savingGoals = [],
+  } = dashboardData;
 
   return (
     <div className="dashboard-container">
       {/* Welcome Header */}
       <div className="welcome-header">
-        <h1>Welcome back, {dashboardData.userName}!</h1>
-        <p>It is the best time to manage your finances.</p>
+        <h1>Welcome back, <span className="user-name">User</span>!</h1>
+        <p>It's the best time to manage your finances.</p>
       </div>
 
       {/* Key Metrics */}
       <div className="key-metrics">
-        <div className="metric">
+        <div className="metric total-balance">
           <h3>Total Balance</h3>
-          <p>${dashboardData.totalBalance}</p>
+          <p>${totalBalance}</p>
         </div>
-        <div className="metric">
+        <div className="metric income">
           <h3>Income</h3>
-          <p>${dashboardData.income}</p>
+          <p>${income}</p>
         </div>
-        <div className="metric">
+        <div className="metric expense">
           <h3>Expense</h3>
-          <p>${dashboardData.expense}</p>
+          <p>${expense}</p>
         </div>
-        <div className="metric">
+        <div className="metric savings">
           <h3>Total Savings</h3>
-          <p>${dashboardData.totalSavings}</p>
+          <p>${totalSavings}</p>
         </div>
-      </div>
-
-      {/* Money Flow Chart */}
-      <div className="money-flow-chart">
-        <h3>Money Flow</h3>
-        <p>Chart will go here.</p>
       </div>
 
       {/* Recent Transactions */}
@@ -71,7 +76,7 @@ const Dashboard = () => {
             </tr>
           </thead>
           <tbody>
-            {dashboardData.recentTransactions.map((transaction, index) => (
+            {recentTransactions.map((transaction, index) => (
               <tr key={index}>
                 <td>{transaction.date}</td>
                 <td>${transaction.amount}</td>
@@ -84,22 +89,22 @@ const Dashboard = () => {
         </table>
       </div>
 
-      {/* Budget Overview */}
-      <div className="budget-overview">
-        <h3>Budget Overview</h3>
-        <p>Donut chart will go here.</p>
-      </div>
-
       {/* Saving Goals */}
       <div className="saving-goals">
         <h3>Saving Goals</h3>
-        {dashboardData.savingGoals.map((goal, index) => (
+        {savingGoals.map((goal, index) => (
           <div key={index} className="goal">
             <h4>{goal.name}</h4>
             <p>
               ${goal.saved} / ${goal.target} (
               {((goal.saved / goal.target) * 100).toFixed(0)}%)
             </p>
+            <div className="progress-bar">
+              <div
+                className="progress"
+                style={{ width: `${(goal.saved / goal.target) * 100}%` }}
+              ></div>
+            </div>
           </div>
         ))}
       </div>
