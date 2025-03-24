@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, PieChart, Pie, Cell, Legend } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, PieChart, Pie, Cell, Legend, ResponsiveContainer } from 'recharts';
 import axios from 'axios';
 import '../styles/Insights.css';
 
@@ -28,43 +28,49 @@ const Insights = () => {
 
   return (
     <div className="insights-container">
-      <h2>Insights</h2>
+      <h2 className="page-title">Insights</h2>
 
-      {/* Income vs Expense Chart */}
-      <div className="chart-container">
-        <h3>Income vs Expense</h3>
-        <BarChart width={600} height={300} data={incomeExpenseData}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="month" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Bar dataKey="income" fill="#82ca9d" />
-          <Bar dataKey="expense" fill="#8884d8" />
-        </BarChart>
-      </div>
+      <div className="charts-grid">
+        {/* Income vs Expense Chart */}
+        <div className="chart-card">
+          <h3>Income vs Expense</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={incomeExpenseData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="income" fill="#82ca9d" />
+              <Bar dataKey="expense" fill="#8884d8" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
 
-      {/* Category-Wise Spending Chart */}
-      <div className="chart-container">
-        <h3>Category-Wise Spending</h3>
-        <PieChart width={400} height={400}>
-          <Pie
-            data={categoryData}
-            dataKey="amount"
-            nameKey="category"
-            cx="50%"
-            cy="50%"
-            outerRadius={150}
-            fill="#8884d8"
-            label
-          >
-            {categoryData.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-            ))}
-          </Pie>
-          <Tooltip />
-          <Legend />
-        </PieChart>
+        {/* Category-Wise Spending Chart */}
+        <div className="chart-card">
+          <h3>Category-Wise Spending</h3>
+          <ResponsiveContainer width="100%" height={300}>
+            <PieChart>
+              <Pie
+                data={categoryData}
+                dataKey="amount"
+                nameKey="category"
+                cx="50%"
+                cy="50%"
+                outerRadius={100}
+                fill="#8884d8"
+                label
+              >
+                {categoryData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     </div>
   );
