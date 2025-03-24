@@ -9,10 +9,19 @@ import GoalsIcon from '../assets/icons/goals.svg';
 import InsightsIcon from '../assets/icons/insights.svg';
 import TransactionsIcon from '../assets/icons/transaction.svg';
 
+// Import your logo
+import Logo from '../assets/icons/logo.png'; // Replace with the path to your logo
+
 const Sidebar = () => {
   return (
     <div className="sidebar">
-      <h2 className="logo">FinTrack</h2>
+      {/* Logo and FinTrack Text */}
+      <div className="sidebar-header">
+        <img src={Logo} alt="FinTrack Logo" className="sidebar-logo" />
+        <h2 className="logo-text">FinTrack</h2>
+      </div>
+
+      {/* Navigation Links */}
       <nav>
         <ul>
           <li>

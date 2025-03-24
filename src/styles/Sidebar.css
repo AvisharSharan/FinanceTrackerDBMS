@@ -1,7 +1,7 @@
 .sidebar {
     width: 250px;
     height: 100vh;
-    background: #f4f2ff; /* Light background for a clean look */
+    background: #f4f2ff;
     display: flex;
     flex-direction: column;
     padding: 20px;
@@ -11,42 +11,62 @@
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
 }
 
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.sidebar-logo {
+    width: 40px;
+    height: 40px;
+    margin-right: 10px;
+    border-radius: 50%;
+    filter: drop-shadow(0 0 10px rgba(108, 92, 231, 0.8));
+}
+
+.logo-text {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #6c5ce7;
+}
+
 .logo {
     font-size: 1.5rem;
     font-weight: bold;
-    color: #6c5ce7; /* Purple color */
+    color: #6c5ce7;
     text-align: center;
-    margin-bottom: 30px; /* Increased space between logo and buttons */
+    margin-bottom: 30px;
 }
 
 .sidebar nav {
     display: flex;
     flex-direction: column;
-    gap: 25px; /* Increased gap between buttons */
-    margin-top: 20px; /* Ensures there's space at the top before buttons */
+    gap: 25px;
+    margin-top: 20px;
 }
 
 .sidebar nav ul {
-    list-style: none; /* Remove default list styling */
+    list-style: none;
     padding: 0;
     margin: 0;
 }
 
 .sidebar nav ul li {
-    margin-bottom: 20px; /* Add gap between buttons */
+    margin-bottom: 20px;
 }
 
 .sidebar nav ul li:last-child {
-    margin-bottom: 0; /* Remove margin for the last button */
+    margin-bottom: 0;
 }
 
 .sidebar-link {
     display: flex;
     align-items: center;
-    gap: 15px; /* Increased gap between icon and text */
-    padding: 15px 20px; /* Increased padding for larger buttons */
-    font-size: 1.2rem; /* Increased font size for better visibility */
-    color: black; /* Initial text color is black */
+    gap: 15px;
+    padding: 15px 20px;
+    font-size: 1.2rem;
+    color: black;
     text-decoration: none;
     border-radius: 10px;
     transition: background 0.3s, font-weight 0.3s, color 0.3s, filter 0.3s, transform 0.3s;
@@ -55,24 +75,24 @@
 .sidebar-link .icon {
     width: 20px;
     height: 20px;
-    filter: invert(1); /* Invert the SVG colors initially */
-    transition: filter 0.3s; /* Smooth transition for filter */
+    filter: invert(1);
+    transition: filter 0.3s;
 }
 
 .sidebar-link:hover,
 .sidebar-link.active {
-    background: #6c5ce7; /* Purple background for hover and active state */
+    background: #6c5ce7;
     font-weight: bold;
-    color: white; /* Text turns white on hover and active state */
+    color: white;
 }
 
 .sidebar-link:hover .icon,
 .sidebar-link.active .icon {
-    filter: invert(0); /* Revert the SVG filter on hover and active state */
+    filter: invert(0);
 }
 
 .sidebar-bottom {
     display: flex;
     flex-direction: column;
-    gap: 15px; /* Increased gap between bottom buttons */
+    gap: 15px;
 }
