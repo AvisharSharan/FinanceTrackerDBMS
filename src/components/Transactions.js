@@ -3,28 +3,26 @@ import axios from 'axios';
 import '../styles/Transactions.css';
 
 const Transactions = () => {
-  const [transactions, setTransactions] = useState([]); // State to store transactions
-  const [categories, setCategories] = useState([]); // State to store categories
+  const [transactions, setTransactions] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [newTransaction, setNewTransaction] = useState({
     date: '',
     amount: '',
     category: '',
     type: '',
     description: '',
-  }); // State for the add transaction form
+  });
   const [error, setError] = useState('');
 
-  // Fetch transactions from the backend
   const fetchTransactions = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/transactions');
+      const response = await axios.get('http://localhost:5000/api/transactions?userId=1');
       setTransactions(response.data);
     } catch (error) {
       console.error('Error fetching transactions:', error);
     }
   };
 
-  // Fetch categories from the backend
   const fetchCategories = async () => {
     try {
       const response = await axios.get('http://localhost:5000/api/categories');
@@ -34,13 +32,11 @@ const Transactions = () => {
     }
   };
 
-  // Fetch data on component mount
   useEffect(() => {
     fetchTransactions();
     fetchCategories();
   }, []);
 
-  // Handle form submission to add a new transaction
   const handleAddTransaction = async (e) => {
     e.preventDefault();
     if (!newTransaction.date || !newTransaction.amount || !newTransaction.category || !newTransaction.type) {
@@ -48,106 +44,117 @@ const Transactions = () => {
       return;
     }
     try {
-      await axios.post('http://localhost:5000/api/transactions', newTransaction);
-      setNewTransaction({ date: '', amount: '', category: '', type: '', description: '' }); // Reset the form
+      await axios.post('http://localhost:5000/api/transactions', {
+        userId: 1,
+        date: newTransaction.date,
+        amount: newTransaction.amount,
+        category: newTransaction.category,
+        type: newTransaction.type,
+        description: newTransaction.description,
+      });
+      setNewTransaction({ date: '', amount: '', category: '', type: '', description: '' });
       setError('');
-      fetchTransactions(); // Refresh the transactions list
+      fetchTransactions();
     } catch (error) {
       console.error('Error adding transaction:', error);
     }
   };
 
   return (
-    <div className="transactions-container">
-      <h2>Transactions</h2>
+    <div className="transactions-page">
+      <div className="left-panel">
+        <h2 className="form-title">Add Transaction</h2>
+        <form className="transaction-form" onSubmit={handleAddTransaction}>
+          <div className="form-group">
+            <label htmlFor="date">Date</label>
+            <input
+              type="date"
+              id="date"
+              value={newTransaction.date}
+              onChange={(e) => setNewTransaction({ ...newTransaction, date: e.target.value })}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="amount">Amount</label>
+            <input
+              type="number"
+              id="amount"
+              value={newTransaction.amount}
+              onChange={(e) => setNewTransaction({ ...newTransaction, amount: e.target.value })}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="category">Category</label>
+            <select
+              id="category"
+              value={newTransaction.category}
+              onChange={(e) => setNewTransaction({ ...newTransaction, category: e.target.value })}
+              required
+            >
+              <option value="">Select a category</option>
+              {categories.map((category) => (
+                <option key={category.category_id} value={category.category_id}>
+                  {category.category_name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="form-group">
+            <label htmlFor="type">Type</label>
+            <select
+              id="type"
+              value={newTransaction.type}
+              onChange={(e) => setNewTransaction({ ...newTransaction, type: e.target.value })}
+              required
+            >
+              <option value="">Select a type</option>
+              <option value="income">Income</option>
+              <option value="expense">Expense</option>
+            </select>
+          </div>
+          <div className="form-group">
+            <label htmlFor="description">Description</label>
+            <textarea
+              id="description"
+              value={newTransaction.description}
+              onChange={(e) => setNewTransaction({ ...newTransaction, description: e.target.value })}
+              rows="3"
+            ></textarea>
+          </div>
+          {error && <p className="error">{error}</p>}
+          <button type="submit" className="submit-button">Add Transaction</button>
+        </form>
+      </div>
 
-      {/* Add Transaction Form */}
-      <form className="add-transaction-form" onSubmit={handleAddTransaction}>
-        <div>
-          <label htmlFor="date">Date:</label>
-          <input
-            type="date"
-            id="date"
-            value={newTransaction.date}
-            onChange={(e) => setNewTransaction({ ...newTransaction, date: e.target.value })}
-            required
-          />
+      <div className="right-panel">
+        <h2 className="table-title">Transaction History</h2>
+        <div className="table-container">
+          <table className="transactions-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Category</th>
+                <th>Type</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              {transactions.map((transaction, index) => (
+                <tr key={index}>
+                  <td>{new Date(transaction.date).toLocaleDateString()}</td>
+                  <td>${transaction.amount}</td>
+                  <td>{transaction.category_name}</td>
+                  <td>{transaction.type}</td>
+                  <td>{transaction.description}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-        <div>
-          <label htmlFor="amount">Amount:</label>
-          <input
-            type="number"
-            id="amount"
-            value={newTransaction.amount}
-            onChange={(e) => setNewTransaction({ ...newTransaction, amount: e.target.value })}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="category">Category:</label>
-          <select
-            id="category"
-            value={newTransaction.category}
-            onChange={(e) => setNewTransaction({ ...newTransaction, category: e.target.value })}
-            required
-          >
-            <option value="">Select a category</option>
-            {categories.map((category) => (
-              <option key={category.category_id} value={category.category_id}>
-                {category.category_name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label htmlFor="type">Type:</label>
-          <select
-            id="type"
-            value={newTransaction.type}
-            onChange={(e) => setNewTransaction({ ...newTransaction, type: e.target.value })}
-            required
-          >
-            <option value="">Select a type</option>
-            <option value="income">Income</option>
-            <option value="expense">Expense</option>
-          </select>
-        </div>
-        <div>
-          <label htmlFor="description">Description:</label>
-          <input
-            type="text"
-            id="description"
-            value={newTransaction.description}
-            onChange={(e) => setNewTransaction({ ...newTransaction, description: e.target.value })}
-          />
-        </div>
-        {error && <p className="error">{error}</p>}
-        <button type="submit">Add Transaction</button>
-      </form>
-
-      {/* Transactions Table */}
-      <table className="transactions-table">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Amount</th>
-            <th>Category</th>
-            <th>Type</th>
-            <th>Description</th>
-          </tr>
-        </thead>
-        <tbody>
-          {transactions.map((transaction, index) => (
-            <tr key={index}>
-              <td>{new Date(transaction.date).toLocaleDateString()}</td>
-              <td>${transaction.amount}</td>
-              <td>{transaction.category_name}</td>
-              <td>{transaction.type}</td>
-              <td>{transaction.description}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      </div>
     </div>
   );
 };
