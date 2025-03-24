@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import '../styles/Sidebar.css'; // You can style it here
 
 // Import your SVG icons
@@ -13,6 +13,13 @@ import TransactionsIcon from '../assets/icons/transaction.svg';
 import Logo from '../assets/icons/logo.png'; // Replace with the path to your logo
 
 const Sidebar = () => {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('user'); // Clear user data from localStorage
+    navigate('/login'); // Redirect to the login page
+  };
+
   return (
     <div className="sidebar">
       {/* Logo and FinTrack Text */}
@@ -81,6 +88,13 @@ const Sidebar = () => {
           </li>
         </ul>
       </nav>
+
+      {/* Logout Button */}
+      <div className="logout-container">
+        <button className="logout-button" onClick={handleLogout}>
+          Logout
+        </button>
+      </div>
     </div>
   );
 };

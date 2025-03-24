@@ -3,54 +3,98 @@ import axios from 'axios';
 import '../styles/Budget.css';
 
 const Budget = () => {
-  const [budgets, setBudgets] = useState([]); // State to store budget data
-  const [categories, setCategories] = useState([]); // State to store category data
+  const [budgets, setBudgets] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [newBudget, setNewBudget] = useState({
     category: '',
     monthlyLimit: '',
-  }); // State for the add budget form
+  });
+  const [editBudget, setEditBudget] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  // Fetch budgets from the backend
   const fetchBudgets = async () => {
+    setLoading(true);
+    setError(null);
     try {
-      const response = await axios.get('http://localhost:5000/api/budgets');
+      const response = await axios.get('http://localhost:5000/api/budgets?userId=1');
       setBudgets(response.data);
     } catch (error) {
       console.error('Error fetching budgets:', error);
+      setError('Failed to fetch budgets. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Fetch categories from the backend
   const fetchCategories = async () => {
+    setLoading(true);
+    setError(null);
     try {
       const response = await axios.get('http://localhost:5000/api/categories');
       setCategories(response.data);
     } catch (error) {
       console.error('Error fetching categories:', error);
+      setError('Failed to fetch categories. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Fetch budgets and categories on component mount
   useEffect(() => {
     fetchBudgets();
     fetchCategories();
   }, []);
 
-  // Handle form submission to add a new budget
   const handleAddBudget = async (e) => {
     e.preventDefault();
     try {
       await axios.post('http://localhost:5000/api/budgets', {
         category_id: newBudget.category,
         monthly_limit: parseFloat(newBudget.monthlyLimit),
-        user_id: 1, // Replace with the actual user ID
+        userId: 1,
       });
-      setNewBudget({ category: '', monthlyLimit: '' }); // Reset the form
-      fetchBudgets(); // Refresh the budget list
+      setNewBudget({ category: '', monthlyLimit: '' });
+      fetchBudgets();
     } catch (error) {
       console.error('Error adding budget:', error);
+      alert('Failed to add budget. Please try again.');
     }
   };
+
+  const handleEditBudget = (budget) => {
+    setEditBudget(budget);
+  };
+
+  const handleUpdateBudget = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.put(`http://localhost:5000/api/budgets/${editBudget.budget_id}`, {
+        monthly_limit: parseFloat(editBudget.monthly_limit),
+        userId: 1,
+      });
+      setEditBudget(null);
+      fetchBudgets();
+    } catch (error) {
+      console.error('Error updating budget:', error);
+      alert('Failed to update budget. Please try again.');
+    }
+  };
+
+  const handleDeleteBudget = async (budgetId) => {
+    if (window.confirm('Are you sure you want to delete this budget?')) {
+      try {
+        await axios.delete(`http://localhost:5000/api/budgets/${budgetId}`);
+        fetchBudgets();
+      } catch (error) {
+        console.error('Error deleting budget:', error);
+        alert('Failed to delete budget. Please try again.');
+      }
+    }
+  };
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div className="error">{error}</div>;
 
   return (
     <div className="budget-container">
@@ -91,6 +135,32 @@ const Budget = () => {
         <button type="submit">Add Budget</button>
       </form>
 
+      {/* Edit Budget Form */}
+      {editBudget && (
+        <form className="edit-budget-form" onSubmit={handleUpdateBudget}>
+          <div>
+            <label htmlFor="editMonthlyLimit">Edit Limit:</label>
+            <input
+              type="number"
+              id="editMonthlyLimit"
+              value={editBudget.monthly_limit || ''}
+              onChange={(e) =>
+                setEditBudget({ ...editBudget, monthly_limit: e.target.value })
+              }
+              required
+            />
+          </div>
+          <button type="submit">Update</button>
+          <button
+            type="button"
+            className="cancel-button"
+            onClick={() => setEditBudget(null)}
+          >
+            Cancel
+          </button>
+        </form>
+      )}
+
       {/* Budget Table */}
       <table className="budget-table">
         <thead>
@@ -100,23 +170,23 @@ const Budget = () => {
             <th>Spent</th>
             <th>Remaining</th>
             <th>Progress</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           {budgets.map((budget, index) => {
             const remaining =
               (budget.monthly_limit || 0) - (budget.spent || 0);
-            const progress = Math.min(
-              ((budget.spent || 0) / (budget.monthly_limit || 1)) * 100,
-              100
-            );
+            const progress = budget.monthly_limit
+              ? Math.min(((budget.spent || 0) / budget.monthly_limit) * 100, 100)
+              : 0;
 
             return (
               <tr key={index} className={remaining < 0 ? 'over-budget' : ''}>
                 <td>{budget.category_name}</td>
-                <td>${budget.monthly_limit || 0}</td>
-                <td>${budget.spent || 0}</td>
-                <td>${remaining}</td>
+                <td>${Number(budget.monthly_limit || 0).toFixed(2)}</td>
+                <td>${Number(budget.spent || 0).toFixed(2)}</td>
+                <td>${Number(remaining || 0).toFixed(2)}</td>
                 <td>
                   <div className="progress-bar">
                     <div
@@ -125,6 +195,22 @@ const Budget = () => {
                     ></div>
                   </div>
                   {progress.toFixed(0)}%
+                </td>
+                <td className="actions">
+                  <button
+                    className="edit-button"
+                    onClick={() => handleEditBudget(budget)}
+                    title="Edit"
+                  >
+                    <i className="fas fa-edit"></i>
+                  </button>
+                  <button
+                    className="delete-button"
+                    onClick={() => handleDeleteBudget(budget.budget_id)}
+                    title="Delete"
+                  >
+                    <i className="fas fa-trash"></i>
+                  </button>
                 </td>
               </tr>
             );

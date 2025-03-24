@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import '../styles/Login.css';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -12,9 +11,10 @@ const Login = () => {
     e.preventDefault();
     try {
       const response = await axios.post('http://localhost:5000/api/login', { email, password });
-      if (response.data && response.data.token) {
-        localStorage.setItem('token', response.data.token); // Save the token in localStorage
-        alert('Login successful!');
+      if (response.data && response.data.message === 'Login successful') {
+        // Save user data in localStorage
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+        alert(response.data.message);
         navigate('/dashboard'); // Redirect to the dashboard
       } else {
         alert('Unexpected response from the server.');

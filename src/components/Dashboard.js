@@ -4,6 +4,10 @@ import '../styles/Dashboard.css';
 const Dashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
 
+  // Retrieve the user's name from localStorage
+  const user = JSON.parse(localStorage.getItem('user'));
+  const userName = user?.name || 'User'; // Fallback to 'User' if name is not available
+
   // Fetch dashboard data from the backend
   useEffect(() => {
     const fetchData = async () => {
@@ -38,7 +42,7 @@ const Dashboard = () => {
     <div className="dashboard-container">
       {/* Welcome Header */}
       <div className="welcome-header">
-        <h1>Welcome back, <span className="user-name">User</span>!</h1>
+        <h1>Welcome back, <span className="user-name">{userName}</span>!</h1>
         <p>It's the best time to manage your finances.</p>
       </div>
 
