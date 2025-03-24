@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'; // Added Navigate for redirection
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import Budget from './components/Budget';
@@ -15,6 +15,10 @@ function App() {
         <Sidebar />
         <div className="content">
           <Routes>
+            {/* Default Route: Redirect '/' to '/dashboard' */}
+            <Route path="/" element={<Navigate to="/dashboard" />} />
+
+            {/* Other Routes */}
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/budget" element={<Budget />} />
             <Route path="/goals" element={<Goals />} />
