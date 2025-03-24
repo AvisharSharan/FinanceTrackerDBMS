@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import '../styles/Sidebar.css'; // You can style it here
+import '../styles/Sidebar.css';
 
 // Import your SVG icons
 import DashboardIcon from '../assets/icons/dash.svg';
@@ -10,10 +10,11 @@ import InsightsIcon from '../assets/icons/insights.svg';
 import TransactionsIcon from '../assets/icons/transaction.svg';
 
 // Import your logo
-import Logo from '../assets/icons/logo.png'; // Replace with the path to your logo
+import Logo from '../assets/icons/logo.png';
 
 const Sidebar = () => {
   const navigate = useNavigate();
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem('user'); // Clear user data from localStorage
@@ -21,11 +22,20 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="sidebar">
+    <div className={`sidebar ${isCollapsed ? 'collapsed' : ''}`}>
+      {/* Toggle Button */}
+      <button
+        className="toggle-button"
+        onClick={() => setIsCollapsed(!isCollapsed)}
+        title={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
+      >
+        {isCollapsed ? '☰' : '✕'}
+      </button>
+
       {/* Logo and FinTrack Text */}
       <div className="sidebar-header">
         <img src={Logo} alt="FinTrack Logo" className="sidebar-logo" />
-        <h2 className="logo-text">FinTrack</h2>
+        {!isCollapsed && <h2 className="logo-text">FinTrack</h2>}
       </div>
 
       {/* Navigation Links */}
@@ -39,7 +49,7 @@ const Sidebar = () => {
               }
             >
               <img src={DashboardIcon} alt="Dashboard" className="icon" />
-              Dashboard
+              {!isCollapsed && 'Dashboard'}
             </NavLink>
           </li>
           <li>
@@ -50,7 +60,7 @@ const Sidebar = () => {
               }
             >
               <img src={BudgetIcon} alt="Budget" className="icon" />
-              Budget
+              {!isCollapsed && 'Budget'}
             </NavLink>
           </li>
           <li>
@@ -61,7 +71,7 @@ const Sidebar = () => {
               }
             >
               <img src={GoalsIcon} alt="Goals" className="icon" />
-              Goals
+              {!isCollapsed && 'Goals'}
             </NavLink>
           </li>
           <li>
@@ -72,7 +82,7 @@ const Sidebar = () => {
               }
             >
               <img src={InsightsIcon} alt="Insights" className="icon" />
-              Insights
+              {!isCollapsed && 'Insights'}
             </NavLink>
           </li>
           <li>
@@ -83,17 +93,20 @@ const Sidebar = () => {
               }
             >
               <img src={TransactionsIcon} alt="Transactions" className="icon" />
-              Transactions
+              {!isCollapsed && 'Transactions'}
             </NavLink>
           </li>
         </ul>
       </nav>
 
       {/* Logout Button */}
-      <div className="logout-container">
-        <button className="logout-button" onClick={handleLogout}>
-          Logout
-        </button>
+      <div className="sidebar-bottom">
+        <div className="logout-container">
+          <button className="logout-button" onClick={handleLogout}>
+            <i className="fas fa-sign-out-alt"></i>
+            {!isCollapsed && ' Logout'}
+          </button>
+        </div>
       </div>
     </div>
   );
