@@ -1,19 +1,24 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import '../styles/Registration.css';
 
 const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate(); // Hook for navigation
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       await axios.post('http://localhost:5000/api/register', { name, email, password });
       alert('Registration successful!');
+      navigate('/login'); // Redirect to login page
     } catch (error) {
       console.error('Error registering user:', error);
-      alert(error.response.data.error || 'An error occurred');
+      // Safely access error.response.data.error or provide a fallback message
+      alert(error.response?.data?.error || 'An unexpected error occurred. Please try again.');
     }
   };
 
