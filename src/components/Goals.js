@@ -3,25 +3,22 @@ import axios from 'axios';
 import '../styles/Goals.css';
 
 const Goals = () => {
-  const [goals, setGoals] = useState([]); // State to store goals
-  const [newGoal, setNewGoal] = useState({
-    name: '',
-    target: '',
-    deadline: '',
-  }); // State for the add goal form
+  const [goals, setGoals] = useState([]);
+  const [newGoal, setNewGoal] = useState({ name: '', target: '', deadline: '' });
+  const [addSavingsGoalId, setAddSavingsGoalId] = useState(null);
+  const [savingsAmount, setSavingsAmount] = useState('');
   const [error, setError] = useState('');
 
   // Fetch goals from the backend
   const fetchGoals = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/goals');
+      const response = await axios.get('http://localhost:5000/api/goals?userId=1');
       setGoals(response.data);
     } catch (error) {
       console.error('Error fetching goals:', error);
     }
   };
 
-  // Fetch goals on component mount
   useEffect(() => {
     fetchGoals();
   }, []);
@@ -35,81 +32,146 @@ const Goals = () => {
     }
     try {
       await axios.post('http://localhost:5000/api/goals', {
+        userId: 1,
         name: newGoal.name,
         target: parseFloat(newGoal.target),
         deadline: newGoal.deadline,
       });
-      setNewGoal({ name: '', target: '', deadline: '' }); // Reset the form
+      setNewGoal({ name: '', target: '', deadline: '' });
       setError('');
-      fetchGoals(); // Refresh the goals list
+      fetchGoals();
     } catch (error) {
       console.error('Error adding goal:', error);
     }
   };
 
+  // Handle adding savings to a goal
+  const handleAddSavings = async (e) => {
+    e.preventDefault();
+    if (!savingsAmount || savingsAmount <= 0) {
+      setError('Please enter a valid amount.');
+      return;
+    }
+    try {
+      await axios.put(`http://localhost:5000/api/goals/${addSavingsGoalId}/savings`, {
+        amount: parseFloat(savingsAmount),
+      });
+      setSavingsAmount('');
+      setAddSavingsGoalId(null);
+      setError('');
+      fetchGoals();
+    } catch (error) {
+      console.error('Error adding savings:', error);
+    }
+  };
+
+  // Handle deleting a goal
+  const handleDeleteGoal = async (goalId) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/goals/${goalId}`);
+      setGoals(goals.filter((goal) => goal.goal_id !== goalId)); // Update state to remove the deleted goal
+    } catch (error) {
+      console.error('Error deleting goal:', error);
+    }
+  };
+
   return (
     <div className="goals-container">
-      <h2>Goals</h2>
+      <h2 className="page-title">Goals</h2>
 
-      {/* Add Goal Form */}
-      <form className="add-goal-form" onSubmit={handleAddGoal}>
-        <div>
-          <label htmlFor="name">Goal Name:</label>
-          <input
-            type="text"
-            id="name"
-            value={newGoal.name}
-            onChange={(e) => setNewGoal({ ...newGoal, name: e.target.value })}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="target">Target Amount:</label>
-          <input
-            type="number"
-            id="target"
-            value={newGoal.target}
-            onChange={(e) => setNewGoal({ ...newGoal, target: e.target.value })}
-            required
-          />
-        </div>
-        <div>
-          <label htmlFor="deadline">Deadline:</label>
-          <input
-            type="date"
-            id="deadline"
-            value={newGoal.deadline}
-            onChange={(e) =>
-              setNewGoal({ ...newGoal, deadline: e.target.value })
-            }
-            required
-          />
-        </div>
-        {error && <p className="error">{error}</p>}
-        <button type="submit">Add Goal</button>
-      </form>
+      <div className="form-container">
+        <h3 className="form-title">Add a New Goal</h3>
+        <form className="add-goal-form" onSubmit={handleAddGoal}>
+          <div className="form-group">
+            <label htmlFor="name">Goal Name</label>
+            <input
+              type="text"
+              id="name"
+              value={newGoal.name}
+              onChange={(e) => setNewGoal({ ...newGoal, name: e.target.value })}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="target">Target Amount</label>
+            <input
+              type="number"
+              id="target"
+              value={newGoal.target}
+              onChange={(e) => setNewGoal({ ...newGoal, target: e.target.value })}
+              required
+            />
+          </div>
+          <div className="form-group">
+            <label htmlFor="deadline">Deadline</label>
+            <input
+              type="date"
+              id="deadline"
+              value={newGoal.deadline}
+              onChange={(e) => setNewGoal({ ...newGoal, deadline: e.target.value })}
+              required
+            />
+          </div>
+          {error && <p className="error">{error}</p>}
+          <button type="submit" className="submit-button">Add Goal</button>
+        </form>
+      </div>
 
-      {/* Goals List */}
+      <h3 className="progress-section-title">Your Goals</h3>
+
       <div className="goals-list">
         {goals.map((goal, index) => {
-          const progress = Math.min(
-            (goal.saved_amount / goal.target_amount) * 100,
-            100
-          );
+          const progress = Math.min((goal.saved / goal.target) * 100, 100);
           return (
-            <div key={index} className="goal-item">
+            <div key={index} className="goal-card">
               <h3>{goal.name}</h3>
               <p>
-                Saved: ${goal.saved_amount} / ${goal.target_amount}
+                Saved: <strong>${goal.saved}</strong> / <strong>${goal.target}</strong>
               </p>
               <p>Deadline: {new Date(goal.deadline).toLocaleDateString()}</p>
-              <div className="progress-bar">
-                <div
-                  className="progress"
-                  style={{ width: `${progress}%` }}
-                ></div>
+              <div className="progress-bar-container">
+                <div className="progress-bar">
+                  <div
+                    className="progress"
+                    style={{ width: `${progress}%` }}
+                  ></div>
+                </div>
+                <div className="action-buttons">
+                  <button
+                    className="add-savings-button"
+                    onClick={() => setAddSavingsGoalId(goal.goal_id)}
+                  >
+                    +
+                  </button>
+                  <button
+                    className="delete-icon-button"
+                    onClick={() => handleDeleteGoal(goal.goal_id)}
+                  >
+                    <i className="fas fa-trash"></i>
+                  </button>
+                </div>
               </div>
-              <p>{progress.toFixed(0)}% Complete</p>
+              <p className="progress-text">{progress.toFixed(0)}% Complete</p>
+
+              {addSavingsGoalId === goal.goal_id && (
+                <form className="add-savings-form" onSubmit={handleAddSavings}>
+                  <input
+                    type="number"
+                    placeholder="Enter amount"
+                    value={savingsAmount}
+                    onChange={(e) => setSavingsAmount(e.target.value)}
+                    required
+                  />
+                  <button type="submit" className="submit-savings-button">Save</button>
+                  <button
+                    type="button"
+                    className="cancel-savings-button"
+                    onClick={() => setAddSavingsGoalId(null)}
+                  >
+                    Cancel
+                  </button>
+                </form>
+              )}
             </div>
           );
         })}
